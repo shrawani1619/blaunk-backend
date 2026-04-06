@@ -47,7 +47,7 @@ app.use(
 
       // Allow non-browser requests (no Origin header)
       if (!origin) {
-        callback(null, true);
+        return callback(null, true);
       }
 
       // Explicitly allowed origins (Render env)
