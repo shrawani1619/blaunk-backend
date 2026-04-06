@@ -1,0 +1,76 @@
+const mongoose = require('mongoose');
+
+const referenceSchema = new mongoose.Schema(
+  {
+    name: String,
+    mobile: String,
+    designation: String,
+    city: String,
+  },
+  { _id: false },
+);
+
+const employeeCredentialsSchema = new mongoose.Schema(
+  {
+    pan: { type: String, required: true, index: true, unique: true },
+    employeeName: String,
+    mobile: String,
+    email: String,
+    aadhaar: String,
+    empCode: String,
+    address: String,
+    city: String,
+    zip: String,
+    country: String,
+    state: String,
+    gender: String,
+    yearlyCtc: String,
+    department: String,
+    designation: String,
+    bankName: String,
+    ifscCode: String,
+    bankAccountNumber: String,
+    medicalInsuranceNo: String,
+    doj: String,
+    doc: String,
+    centreName: String,
+    confirmationStatus: String,
+    monthlyLeaves: String,
+    nps: String,
+    esi: String,
+    jobGrade: String,
+    uan: String,
+    pf: String,
+    remarks: String,
+    status: String,
+    exitDate: String,
+    basicSalary: String,
+    hra: String,
+    lta: String,
+    medicalAllowance: String,
+    cea: String,
+    foodAllowance: String,
+    supplementaryAllowance: String,
+    mea: String,
+    pTax: String,
+    healthInsurance: String,
+    esiSalary: String,
+    pfContribution: String,
+    npsEmployer: String,
+    npsEmployee: String,
+    roundOff: String,
+    ctcMonthly: String,
+    ctcPerDay: String,
+    gratuity: String,
+    references: [referenceSchema],
+    employeeDocumentUrl: String,
+  },
+  { timestamps: true },
+);
+
+const EmployeeCredentials =
+  mongoose.models.EmployeeCredentials ||
+  mongoose.model('EmployeeCredentials', employeeCredentialsSchema);
+
+module.exports = EmployeeCredentials;
+
