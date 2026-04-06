@@ -24,24 +24,49 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const CLIENT_ORIGINS = process.env.CLIENT_ORIGINS;
 
-const allowedOrigins = [
-  CLIENT_ORIGIN,
-  'http://localhost:5175',
-];
+function normalizeOrigin(value) {
+  return String(value || '').trim().replace(/\/$/, '');
+}
+
+const allowedOrigins = new Set(
+  [
+    CLIENT_ORIGIN,
+    'http://localhost:5175',
+    ...(CLIENT_ORIGINS ? CLIENT_ORIGINS.split(',') : []),
+  ]
+    .map(normalizeOrigin)
+    .filter(Boolean),
+);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      const normalized = normalizeOrigin(origin);
+
+      // Allow non-browser requests (no Origin header)
+      if (!origin) {
         callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
       }
+
+      // Explicitly allowed origins (Render env)
+      if (allowedOrigins.has(normalized)) {
+        return callback(null, true);
+      }
+
+      // Allow Vercel preview domains if you deploy from Vercel
+      if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(normalized)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
   }),
 );
+// Ensure preflight requests succeed
+app.options('*', cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.use(morgan('dev'));
